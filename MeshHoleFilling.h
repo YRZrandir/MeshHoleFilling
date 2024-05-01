@@ -7,6 +7,7 @@
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 #include <CGAL/boost/graph/io.h>
 
+// TODO: output new faces & vertices
 template <typename PolygonMesh>
 void triangulate_hole_w(PolygonMesh& mesh, typename boost::graph_traits<PolygonMesh>::halfedge_descriptor border_halfedge)
 {

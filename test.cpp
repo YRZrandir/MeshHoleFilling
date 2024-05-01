@@ -8,6 +8,7 @@
 using Kernel = CGAL::Simple_cartesian<double>;
 using Polyhedron = CGAL::Polyhedron_3<Kernel>;
 
+// TODO: test different mesh type
 int main(int argc, char* argv[])
 {
     Polyhedron mesh;
