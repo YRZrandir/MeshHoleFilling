@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     CGAL::Polygon_mesh_processing::extract_boundary_cycles(mesh, std::back_inserter(border_edges));
     for(auto hh : border_edges)
     {
-        triangulate_hole(mesh, hh);
+        triangulate_hole_w(mesh, hh);
     }
     CGAL::IO::write_polygon_mesh("C:\\Dev\\MeshHoleFilling\\test\\Lout.obj", mesh);
     return 0;

@@ -8,7 +8,7 @@
 #include <CGAL/boost/graph/io.h>
 
 template <typename PolygonMesh>
-void triangulate_hole(PolygonMesh& mesh, typename boost::graph_traits<PolygonMesh>::halfedge_descriptor border_halfedge)
+void triangulate_hole_w(PolygonMesh& mesh, typename boost::graph_traits<PolygonMesh>::halfedge_descriptor border_halfedge)
 {
     CGAL_precondition(CGAL::is_valid_polygon_mesh(mesh));
     CGAL_precondition(CGAL::is_triangle_mesh(mesh));
