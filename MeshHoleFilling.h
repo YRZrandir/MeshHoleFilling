@@ -1,11 +1,12 @@
-#include <CGAL/Polyhedron_3.h>
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/boost/graph/iterator.h>
+#include <CGAL/boost/graph/helpers.h>
 #include <CGAL/boost/graph/Euler_operations.h>
 #include <CGAL/boost/graph/properties.h>
 #include <CGAL/boost/graph/helpers.h>
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
-#include <CGAL/boost/graph/io.h>
+#include <CGAL/boost/graph/graph_traits_HalfedgeDS_default.h>
+#include <CGAL/boost/graph/graph_traits_Polyhedron_3.h>
+#include <CGAL/boost/graph/graph_traits_Surface_mesh.h>
 
 template <typename PolygonMesh, typename CGAL_NP_TEMPLATE_PARAMETERS>
 void triangulate_hole_w(PolygonMesh& mesh, typename boost::graph_traits<PolygonMesh>::halfedge_descriptor border_halfedge, const CGAL_NP_CLASS& np = CGAL::parameters::default_values())
@@ -26,11 +27,12 @@ void triangulate_hole_w(PolygonMesh& mesh, typename boost::graph_traits<PolygonM
     using hHalfedge = typename boost::graph_traits<PolygonMesh>::halfedge_descriptor;
     using hVertex = typename boost::graph_traits<PolygonMesh>::vertex_descriptor;
     using hFacet = typename boost::graph_traits<PolygonMesh>::face_descriptor;
-    using VPmap = typename CGAL::GetVertexPointMap<PolygonMesh>::type;
+    using VPmap = typename CGAL::GetVertexPointMap<PolygonMesh, CGAL_NP_CLASS>::type;
     using Point_3 = typename boost::property_traits<VPmap>::value_type;
-    using Kernel = Point_3::R;
+    using Kernel = CGAL::GetGeomTraits<PolygonMesh, CGAL_NP_CLASS>::type;
 
-    VPmap vpm = get_property_map(boost::vertex_point, mesh);
+    VPmap vpm = CGAL::parameters::choose_parameter(CGAL::parameters::get_parameter(np, CGAL::internal_np::vertex_point),
+                             CGAL::get_property_map(boost::vertex_point, mesh));
 
     auto Source     = [&mesh](hHalfedge hh)->hVertex { return CGAL::source(hh, mesh); };
     auto Target     = [&mesh](hHalfedge hh)->hVertex { return CGAL::target(hh, mesh); };
