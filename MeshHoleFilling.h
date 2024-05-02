@@ -7,13 +7,21 @@
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 #include <CGAL/boost/graph/io.h>
 
-// TODO: output new faces & vertices
-template <typename PolygonMesh>
-void triangulate_hole_w(PolygonMesh& mesh, typename boost::graph_traits<PolygonMesh>::halfedge_descriptor border_halfedge)
+template <typename PolygonMesh, typename CGAL_NP_TEMPLATE_PARAMETERS>
+void triangulate_hole_w(PolygonMesh& mesh, typename boost::graph_traits<PolygonMesh>::halfedge_descriptor border_halfedge, const CGAL_NP_CLASS& np = CGAL::parameters::default_values())
 {
     CGAL_precondition(CGAL::is_valid_polygon_mesh(mesh));
     CGAL_precondition(CGAL::is_triangle_mesh(mesh));
     CGAL_precondition(CGAL::is_border(border_halfedge, mesh));
+
+    using Face_output_iterator = typename CGAL::internal_np::Lookup_named_param_def<CGAL::internal_np::face_output_iterator_t,
+                                                         CGAL_NP_CLASS,
+                                                         CGAL::Emptyset_iterator>::type;
+    Face_output_iterator face_out = CGAL::parameters::choose_parameter<CGAL::Emptyset_iterator>(CGAL::parameters::get_parameter(np, CGAL::internal_np::face_output_iterator));
+    using Vertex_output_iterator = typename CGAL::internal_np::Lookup_named_param_def<CGAL::internal_np::vertex_output_iterator_t,
+                                                         CGAL_NP_CLASS,
+                                                         CGAL::Emptyset_iterator>::type;
+    Vertex_output_iterator vertex_out = CGAL::parameters::choose_parameter<CGAL::Emptyset_iterator>(CGAL::parameters::get_parameter(np, CGAL::internal_np::vertex_output_iterator));
 
     using hHalfedge = typename boost::graph_traits<PolygonMesh>::halfedge_descriptor;
     using hVertex = typename boost::graph_traits<PolygonMesh>::vertex_descriptor;
@@ -117,6 +125,8 @@ void triangulate_hole_w(PolygonMesh& mesh, typename boost::graph_traits<PolygonM
             bound_edges.insert(min_angle_edge, Opposite(new_edge));
             bound_edges.erase(min_angle_edge);
             bound_edges.erase(itnext);
+            *face_out = Facet(new_edge);
+            face_out++;
         }
         else
         {
@@ -126,7 +136,9 @@ void triangulate_hole_w(PolygonMesh& mesh, typename boost::graph_traits<PolygonM
             bound_edges.insert(min_angle_edge, Opposite(edge_new));
             bound_edges.erase(min_angle_edge);
             bound_edges.erase(itnext);
-            CGAL::Polygon_mesh_processing::triangulate_face(Facet(edge_new), mesh);
+            CGAL::Polygon_mesh_processing::triangulate_face(Facet(edge_new), mesh, CGAL::parameters::face_output_iterator(face_out));
+            *vertex_out = Target(edge_new);
+            vertex_out++;
         }
     }
 }
